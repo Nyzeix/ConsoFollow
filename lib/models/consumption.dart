@@ -35,4 +35,6 @@ class Consumption {
       homeName: map['home_name'],
     );
   }
+
+  DateTime get time => DateTime.parse(date);
 }

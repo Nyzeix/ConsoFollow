@@ -1,10 +1,15 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:conso_follow/database/database_helper.dart';
 import 'package:conso_follow/models/consumption.dart';
+import 'package:conso_follow/utils/consumption_type_enum.dart';
 
 // L'interface
 abstract class IConsumptionRepository {
   Future<List<Consumption>> getConsumptions(String userId);
+  Future<List<Consumption>> getConsumptionsByType(
+    String userId,
+    ConsumptionType type,
+  );
   Future<void> insertConsumption(Consumption consumption);
   Future<void> deleteConsumption(int id);
 }
@@ -42,6 +47,29 @@ class ConsumptionRepository implements IConsumptionRepository {
       WHERE uth.user_id = ?
       ''',
       [userId],
+    );
+
+    return List.generate(maps.length, (i) {
+      return Consumption.fromMap(maps[i]);
+    });
+  }
+
+
+  /// Récupère les consommations de l'utilisateur courant filtrées par type.
+  @override
+  Future<List<Consumption>> getConsumptionsByType(
+    String userId,
+    ConsumptionType type,
+  ) async {
+    final db = await _dbHelper.database;
+    final List<Map<String, dynamic>> maps = await db.rawQuery(
+      '''
+      SELECT c.* FROM consumption c
+      INNER JOIN home h ON c.home_name = h.name
+      INNER JOIN usertohome uth ON h.id = uth.home_id
+      WHERE uth.user_id = ? AND c.consumption_type = ?
+      ''',
+      [userId, type.unit],
     );
 
     return List.generate(maps.length, (i) {
