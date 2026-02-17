@@ -384,8 +384,8 @@ class MaterialTheme {
     ),
   );
 
-  /// Gaz
-  static const gaz = ExtendedColor(
+  /// Gas
+  static const gas = ExtendedColor(
     seed: Color(0xffe54600),
     value: Color(0xffe54600),
     light: ColorFamily(
@@ -471,7 +471,7 @@ class MaterialTheme {
 
   List<ExtendedColor> get extendedColors => [
     electricity,
-    gaz,
+    gas,
     water,
   ];
 }
