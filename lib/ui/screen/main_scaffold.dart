@@ -91,7 +91,7 @@ class _MainScaffoldState extends State<MainScaffold> {
   /// AppBar commune aux deux layouts
   PreferredSizeWidget _appBar() {
     return AppBar(
-      backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
       title: Text("ConsoFollow - $selectedPageLabel"),
       centerTitle: true,
       actions: [
@@ -131,7 +131,7 @@ class _MainScaffoldState extends State<MainScaffold> {
       appBar: _appBar(),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Theme.of(context).colorScheme.onPrimaryContainer,
-        unselectedItemColor: Theme.of(context).colorScheme.onSecondaryContainer,
+        unselectedItemColor: Theme.of(context).colorScheme.onPrimaryContainer.withOpacity(0.5),
         type: BottomNavigationBarType.fixed,
         backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         items: [

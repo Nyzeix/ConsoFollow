@@ -26,6 +26,10 @@ class _CancelAddStandardRowState extends State<CancelAddStandardRow> {
 
         // Bouton ajouter
         ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+            foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+          ),
           onPressed: () {
             if (widget.onPressedAdd != null) {
               widget.onPressedAdd!();

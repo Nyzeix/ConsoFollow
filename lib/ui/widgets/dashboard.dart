@@ -145,11 +145,15 @@ class _DashboardState extends State<Dashboard> {
               },
             ),
 
-            SettingArea(title: "Filtre par type", children: [
-              SettingRow(title: "Electricité", isEnabled: isElecEnabled, valueChanged: (value) { setState(() { isElecEnabled = value; }); }),
-              SettingRow(title: "Eau", isEnabled: isWaterEnabled, valueChanged: (value){ setState(() { isWaterEnabled = value; }); }),
-              SettingRow(title: "Gaz", isEnabled: isGasEnabled, valueChanged: (value){ setState(() { isGasEnabled = value; }); }),
-            ]),
+            SettingArea(
+              title: "Filtre par type", 
+              color: Theme.of(context).colorScheme.surface,
+              children: [
+                SettingRow(title: "Electricité", isEnabled: isElecEnabled, valueChanged: (value) { setState(() { isElecEnabled = value; }); }),
+                SettingRow(title: "Eau", isEnabled: isWaterEnabled, valueChanged: (value){ setState(() { isWaterEnabled = value; }); }),
+                SettingRow(title: "Gaz", isEnabled: isGasEnabled, valueChanged: (value){ setState(() { isGasEnabled = value; }); }),
+              ]
+            ),
           ],
         ),
       ),

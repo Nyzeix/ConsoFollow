@@ -52,15 +52,11 @@ class _StatementScreenState extends State<StatementScreen> {
       body: FutureBuilder<Map<ConsumptionType, List<Consumption>>>(
         future: _consumptionsFuture,
         builder: (context, snapshot) {
-          // Show loading indicator
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } 
           
-          // Show error message with retry button
           if (snapshot.hasError || vm.errorMessage != null) {
-            print("Error fetching consumptions: ${snapshot.error}");
-            print("ViewModel error message: ${vm.errorMessage}");
             final errorMsg = vm.errorMessage ?? snapshot.error.toString();
             return Center(
               child: Column(
@@ -86,7 +82,6 @@ class _StatementScreenState extends State<StatementScreen> {
             );
           } 
           
-          // Show data or empty state
           if (snapshot.hasData) {
             final consumptionsByType = snapshot.data!;
             final electricity =
@@ -191,9 +186,11 @@ class _StatementScreenState extends State<StatementScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
-                      'Ajouter une consommation',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    Center(
+                      child: const Text(
+                        'Ajouter une consommation',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                      ),
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
@@ -227,7 +224,7 @@ class _StatementScreenState extends State<StatementScreen> {
                           child: TextField(
                             controller: typeController,
                             readOnly: true,
-                            decoration: const InputDecoration(labelText: 'Type'),
+                            decoration: const InputDecoration(labelText: 'Unité'),
                           ),
                         ),
                       ],
