@@ -1,0 +1,63 @@
+import 'package:sqflite/sqflite.dart';
+import 'package:conso_follow/database/database_helper.dart';
+import 'package:conso_follow/models/consumption.dart';
+
+// L'interface
+abstract class IConsumptionRepository {
+  Future<List<Consumption>> getConsumptions(String userId);
+  Future<void> insertConsumption(Consumption consumption);
+  Future<void> deleteConsumption(int id);
+}
+
+// L'implémentation
+class ConsumptionRepository implements IConsumptionRepository {
+  final DatabaseHelper _dbHelper;
+
+  ConsumptionRepository(this._dbHelper);
+
+  /// Ajoute une consommation pour l'utilisateur courant.
+  @override
+  Future<void> insertConsumption(Consumption consumption) async {
+    final db = await _dbHelper.database;
+    // ConflictAlgorithm.replace : si l'ID existe déjà, on écrase les données
+    await db.insert(
+      'consumption',
+      consumption.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+
+  /// Récupère la liste des consommations de l'utilisateur courant.
+  @override
+  Future<List<Consumption>> getConsumptions(String userId) async {
+    final db = await _dbHelper.database;
+    // rawQuery car les conditions de récupérations sont plus complexes (jointures)
+    // On récupère les consommations liées aux maisons, elles mêmes liées  à l'utilisateur courant.
+    final List<Map<String, dynamic>> maps = await db.rawQuery(
+      '''
+      SELECT c.* FROM consumption c
+      INNER JOIN home h ON c.home_name = h.name
+      INNER JOIN usertohome uth ON h.id = uth.home_id
+      WHERE uth.user_id = ?
+      ''',
+      [userId],
+    );
+
+    return List.generate(maps.length, (i) {
+      return Consumption.fromMap(maps[i]);
+    });
+  }
+
+
+  /// Suppression d'une consommation par son ID.
+  @override
+  Future<void> deleteConsumption(int id) async {
+    final db = await _dbHelper.database;
+    await db.delete(
+      'consumption',
+      where: 'id = ?', // Clause WHERE sécurisée contre les injections SQL
+      whereArgs: [id],
+    );
+  }
+}
