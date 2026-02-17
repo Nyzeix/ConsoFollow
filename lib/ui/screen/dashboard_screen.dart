@@ -1,4 +1,5 @@
 import 'package:conso_follow/models/home.dart';
+import 'package:conso_follow/ui/widgets/cancel_add_standard_row.dart';
 import 'package:conso_follow/ui/widgets/dashboard.dart';
 import 'package:conso_follow/viewModels/home_view_model.dart';
 import 'package:flutter/material.dart';
@@ -68,38 +69,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
 
                 const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Annuler'),
-                    ),
-                    const SizedBox(width: 10),
-                    ElevatedButton(
-                      onPressed: () {
-                        final validationError = context
-                          .read<HomeViewModel>()
-                          .validateHomeInputs(
-                            house: houseInputController.text,
-                          );
-                        if (validationError != null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(validationError)),
-                          );
-                          return;
-                        }
-                        final newHome = Home(
-                          name: houseInputController.text,
-                        );
-                        context
-                          .read<HomeViewModel>()
-                          .addHome(newHome);
-                        Navigator.pop(context);
-                      },
-                      child: const Text('Ajouter'),
-                    ),
-                  ],
+
+                CancelAddStandardRow(
+                  onPressedAdd: () {
+                    final validationError = context
+                      .read<HomeViewModel>()
+                      .validateHomeInputs(
+                        house: houseInputController.text,
+                      );
+                    if (validationError != null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(validationError)),
+                      );
+                      return;
+                    }
+                    final newHome = Home(
+                      name: houseInputController.text,
+                    );
+                    context
+                      .read<HomeViewModel>()
+                      .addHome(newHome);
+                    Navigator.pop(context);
+                  },
+                  onPressedCancel: () => Navigator.pop(context),
                 ),
               ],
             ),
