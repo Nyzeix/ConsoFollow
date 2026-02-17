@@ -20,12 +20,30 @@ class _StatementScreenState extends State<StatementScreen> {
   bool _electricityExpanded = true;
   bool _waterExpanded = true;
   bool _gasExpanded = true;
-  late Future<List<Consumption>> _consumptionsFuture;
+
+  // Map de données qui trie les consommations par type
+  late Future<Map<ConsumptionType, List<Consumption>>> _consumptionsFuture;
+
+  /// Récupère les conso par type et les trie dans une map.
+  Future<Map<ConsumptionType, List<Consumption>>> _fetchConsumptionsByType() async {
+    final vm = context.read<StatementViewModel>();
+    final results = await Future.wait([
+      vm.fetchConsumptionsByType(ConsumptionType.electricity),
+      vm.fetchConsumptionsByType(ConsumptionType.water),
+      vm.fetchConsumptionsByType(ConsumptionType.gas),
+    ]);
+
+    return {
+      ConsumptionType.electricity: results[0],
+      ConsumptionType.water: results[1],
+      ConsumptionType.gas: results[2],
+    };
+  }
 
   @override
   void initState() {
     super.initState();
-    _consumptionsFuture = context.read<StatementViewModel>().fetchConsumptions();
+    _consumptionsFuture = _fetchConsumptionsByType();
   }
 
   @override
@@ -41,7 +59,7 @@ class _StatementScreenState extends State<StatementScreen> {
           showAddConsumptionDialog(context);
         },
       ),
-      body: FutureBuilder<List<Consumption>>(
+      body: FutureBuilder<Map<ConsumptionType, List<Consumption>>>(
         future: _consumptionsFuture,
         builder: (context, snapshot) {
           // Show loading indicator
@@ -68,7 +86,7 @@ class _StatementScreenState extends State<StatementScreen> {
                   ElevatedButton(
                     onPressed: () {
                       setState(() {
-                        _consumptionsFuture = vm.fetchConsumptions();
+                        _consumptionsFuture = _fetchConsumptionsByType();
                       });
                     },
                     child: const Text("Réessayer"),
@@ -80,8 +98,13 @@ class _StatementScreenState extends State<StatementScreen> {
           
           // Show data or empty state
           if (snapshot.hasData) {
-            final consumptions = snapshot.data!;
-            if (consumptions.isEmpty) {
+            final consumptionsByType = snapshot.data!;
+            final electricity =
+                consumptionsByType[ConsumptionType.electricity] ?? [];
+            final water = consumptionsByType[ConsumptionType.water] ?? [];
+            final gas = consumptionsByType[ConsumptionType.gas] ?? [];
+            final totalCount = electricity.length + water.length + gas.length;
+            if (totalCount == 0) {
               return const Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -93,7 +116,7 @@ class _StatementScreenState extends State<StatementScreen> {
                 ),
               );
             } else {
-              return success(consumptions);
+              return success(electricity, water, gas);
             }
           } else {
             return const Text("Erreur dans la récupération des données. (E1)");
@@ -103,27 +126,11 @@ class _StatementScreenState extends State<StatementScreen> {
     );
   }
 
-  Widget success(List<Consumption> consumptions) {
-  //Widget success(List<Consumption> electricity, List<Consumption> water, List<Consumption> gas) {
-    final electricity = consumptions
-        .where(
-          (consumption) =>
-              consumption.consumptionType == ConsumptionType.electricity.unit,
-        )
-        .toList();
-    final water = consumptions
-        .where(
-          (consumption) =>
-              consumption.consumptionType == ConsumptionType.water.unit,
-        )
-        .toList();
-    final gas = consumptions
-        .where(
-          (consumption) =>
-              consumption.consumptionType == ConsumptionType.gas.unit,
-        )
-        .toList();
-
+  Widget success(
+    List<Consumption> electricity,
+    List<Consumption> water,
+    List<Consumption> gas,
+  ) {
     return SingleChildScrollView(
       child: SizedBox(
         width: double.infinity,
@@ -344,8 +351,7 @@ class _StatementScreenState extends State<StatementScreen> {
                           .read<StatementViewModel>()
                           .addConsumption(newConsumption);
                       setState(() {
-                        _consumptionsFuture =
-                            context.read<StatementViewModel>().fetchConsumptions();
+                        _consumptionsFuture = _fetchConsumptionsByType();
                       });
                       Navigator.pop(context);
                     },

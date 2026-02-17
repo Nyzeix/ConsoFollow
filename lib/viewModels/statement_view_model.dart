@@ -1,6 +1,7 @@
 import 'package:conso_follow/models/consumption.dart';
 import 'package:conso_follow/models/user.dart';
 import 'package:conso_follow/repositories/consumption_repository.dart';
+import 'package:conso_follow/utils/consumption_type_enum.dart';
 import 'package:flutter/material.dart';
 
 
@@ -104,15 +105,18 @@ class StatementViewModel extends ChangeNotifier {
     }
   }
 
-  Future<List<Consumption>> fetchConsumptionsByType(String type) async {
+  /// Récupère les consommations de l'utilisateur courant filtrées par type.
+  Future<List<Consumption>> fetchConsumptionsByType(ConsumptionType type) async {
     if (_currentUser == null) {
       _errorMessage = 'Utilisateur non connecté.';
       notifyListeners();
       return [];
     }
     try {
-      final allConsumptions = await _consumptionRepository.getConsumptions(_currentUser!.id);
-      return allConsumptions.where((c) => c.consumptionType == type).toList();
+      return await _consumptionRepository.getConsumptionsByType(
+        _currentUser!.id,
+        type,
+      );
     } catch (e) {
       _errorMessage = e.toString();
       notifyListeners();
