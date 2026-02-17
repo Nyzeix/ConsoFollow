@@ -24,26 +24,16 @@ class _StatementScreenState extends State<StatementScreen> {
   // Map de données qui trie les consommations par type
   late Future<Map<ConsumptionType, List<Consumption>>> _consumptionsFuture;
 
-  /// Récupère les conso par type et les trie dans une map.
-  Future<Map<ConsumptionType, List<Consumption>>> _fetchConsumptionsByType() async {
-    final vm = context.read<StatementViewModel>();
-    final results = await Future.wait([
-      vm.fetchConsumptionsByType(ConsumptionType.electricity),
-      vm.fetchConsumptionsByType(ConsumptionType.water),
-      vm.fetchConsumptionsByType(ConsumptionType.gas),
-    ]);
-
-    return {
-      ConsumptionType.electricity: results[0],
-      ConsumptionType.water: results[1],
-      ConsumptionType.gas: results[2],
-    };
-  }
-
   @override
   void initState() {
     super.initState();
-    _consumptionsFuture = _fetchConsumptionsByType();
+    refreshConsumptions();
+  }
+
+  void refreshConsumptions() {
+    setState(() {
+      _consumptionsFuture = context.read<StatementViewModel>().fetchConsumptionsGroupedByType();
+    });
   }
 
   @override
@@ -86,7 +76,7 @@ class _StatementScreenState extends State<StatementScreen> {
                   ElevatedButton(
                     onPressed: () {
                       setState(() {
-                        _consumptionsFuture = _fetchConsumptionsByType();
+                        refreshConsumptions();
                       });
                     },
                     child: const Text("Réessayer"),
@@ -351,7 +341,7 @@ class _StatementScreenState extends State<StatementScreen> {
                           .read<StatementViewModel>()
                           .addConsumption(newConsumption);
                       setState(() {
-                        _consumptionsFuture = _fetchConsumptionsByType();
+                        refreshConsumptions();
                       });
                       Navigator.pop(context);
                     },
