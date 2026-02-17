@@ -1,6 +1,7 @@
 import 'package:conso_follow/models/nav_destination.dart';
 import 'package:conso_follow/ui/screen/auth_screen.dart';
 import 'package:conso_follow/ui/screen/dashboard_screen.dart';
+import 'package:conso_follow/ui/screen/setting_screen.dart';
 import 'package:conso_follow/ui/screen/statement_screen.dart';
 import 'package:conso_follow/viewModels/auth_view_model.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +50,7 @@ class _MainScaffoldState extends State<MainScaffold> {
         label: "Paramètre",
         iconSelected: Icons.settings,
         iconUnselected: Icons.settings_outlined,
-        screen: const Placeholder(),
+        screen: const SettingsScreen(),
       ),
     ];
     

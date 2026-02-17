@@ -1,3 +1,5 @@
+import 'package:conso_follow/controller/notifications_controller.dart';
+import 'package:conso_follow/controller/theme_controller.dart';
 import 'package:conso_follow/database/database_helper.dart';
 import 'package:conso_follow/repositories/consumption_repository.dart';
 import 'package:conso_follow/repositories/home_repository.dart';
@@ -9,13 +11,15 @@ import 'package:conso_follow/viewModels/statement_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:conso_follow/resources/theme.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Point d'entrée.
 /// On y fait l'injection de dépendances
 /// Et on lance la fonction "runApp" qui démarre l'application
 /// 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
 
   runApp(
     // Ici se fait l'injection de dépendances pour les ViewModels.
@@ -24,6 +28,9 @@ void main() {
         // Database
         Provider(create: (_) => DatabaseHelper()),
 
+        // Controller
+        ChangeNotifierProvider(create: (context) => ThemeController(prefs)),
+        ChangeNotifierProvider(create: (context) => NotificationsController()),
         // Authentification
         Provider<IAuthRepository>(
           create: (context) => AuthRepository(context.read<DatabaseHelper>()),
@@ -58,7 +65,6 @@ void main() {
           },
         ),
 
-
         ChangeNotifierProxyProvider<AuthViewModel, StatementViewModel>(
           create: (context) => StatementViewModel(context.read<IConsumptionRepository>()),
           update: (context, authViewModel, statementViewModel) {
@@ -80,12 +86,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Récupération du ThemeController pour pouvoir appliquer le thème sombre ou clair en fonction de la préférence de l'utilisateur.
+    final themeController = context.watch<ThemeController>();
+    
     // Custom Theme created with Material Theme Builder
     MaterialTheme theme = MaterialTheme();
 
     return MaterialApp(
       title: 'ConsoFollow',
-      theme: theme.light(),
+      theme: themeController.isDarkMode ? theme.dark() : theme.light(),
       home: const AuthScreen(),
     );
   }
