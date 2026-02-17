@@ -2,7 +2,7 @@ import 'package:conso_follow/database/database_helper.dart';
 import 'package:conso_follow/repositories/consumption_repository.dart';
 import 'package:conso_follow/repositories/home_repository.dart';
 import 'package:conso_follow/repositories/authentification_repository.dart';
-import 'package:conso_follow/ui/screen/auth_page.dart';
+import 'package:conso_follow/ui/screen/auth_screen.dart';
 import 'package:conso_follow/viewModels/auth_view_model.dart';
 import 'package:conso_follow/viewModels/home_view_model.dart';
 import 'package:conso_follow/viewModels/statement_view_model.dart';
@@ -86,7 +86,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'ConsoFollow',
       theme: theme.light(),
-      home: const AuthPage(),
+      home: const AuthScreen(),
     );
   }
 }

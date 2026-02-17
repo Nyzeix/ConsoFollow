@@ -1,5 +1,5 @@
 import 'package:conso_follow/models/nav_destination.dart';
-import 'package:conso_follow/ui/screen/auth_page.dart';
+import 'package:conso_follow/ui/screen/auth_screen.dart';
 import 'package:conso_follow/ui/screen/dashboard_screen.dart';
 import 'package:conso_follow/ui/screen/statement_screen.dart';
 import 'package:conso_follow/viewModels/auth_view_model.dart';
@@ -114,7 +114,7 @@ class _MainScaffoldState extends State<MainScaffold> {
             onPressed: () {
               context.read<AuthViewModel>().logout();
               Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (context) => const AuthPage()),
+                MaterialPageRoute(builder: (context) => const AuthScreen()),
               );
             },
           ),
