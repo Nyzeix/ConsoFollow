@@ -1,5 +1,6 @@
 import 'package:conso_follow/ui/widgets/setting_area.dart';
 import 'package:conso_follow/ui/widgets/setting_row.dart';
+import 'package:conso_follow/utils/consumption_type_enum.dart';
 import 'package:conso_follow/viewModels/home_view_model.dart';
 import 'package:conso_follow/ui/widgets/multilines_chart.dart';
 import 'package:conso_follow/viewModels/statement_view_model.dart';
@@ -26,7 +27,6 @@ class _DashboardState extends State<Dashboard> {
 
   // Récupère le viewmodel pour les fonctions de filtrage
   StatementViewModel get vm => context.read<StatementViewModel>();
-
 
 
   @override
@@ -118,6 +118,26 @@ class _DashboardState extends State<Dashboard> {
                               backgroundColor: Theme.of(context).colorScheme.surface,
                               chartData: vm.buildDashboardChartData(homeConsumptions: homeConsumptions, isElecEnabled: isElecEnabled, isWaterEnabled: isWaterEnabled, isGasEnabled: isGasEnabled),
                             ),
+
+                            const SizedBox(height: 16),
+
+                            // Consommation moyenne sur la période sélectionnée pour chaque type de consommation
+                            Text(
+                              'Affichage des moyennes de consommations des $_selectedDays derniers jours.',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+
+                            if (isElecEnabled) ...[
+                              Text("Electrique : ${vm.calculateAverageConsumption(vm.filterByType(homeConsumptions, ConsumptionType.electricity)).toStringAsFixed(2)} kWh"),
+                              const SizedBox(height: 8),
+                            ],
+                            if (isWaterEnabled) ...[
+                              Text("Eau : ${vm.calculateAverageConsumption(vm.filterByType(homeConsumptions, ConsumptionType.water)).toStringAsFixed(2)} L"),
+                              const SizedBox(height: 8),
+                            ],
+                            if (isGasEnabled) ...[
+                              Text("Gaz : ${vm.calculateAverageConsumption(vm.filterByType(homeConsumptions, ConsumptionType.gas)).toStringAsFixed(2)} m³"),
+                            ],
                             const SizedBox(height: 16),
                           ],
                         ),

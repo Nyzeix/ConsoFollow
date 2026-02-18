@@ -193,4 +193,13 @@ class StatementViewModel extends ChangeNotifier {
     }
     return DashboardChartData(series: series, lineColors: colors, lineLabels: labels);
   }
+
+  /// Calcule de la consommation moyenne
+  double calculateAverageConsumption(List<Consumption> consumptions) {
+    if (consumptions.isEmpty) {
+      return 0.0;
+    }
+    final total = consumptions.fold<double>(0.0, (sum, item) => sum + item.amount);
+    return total / consumptions.length;
+  }
 }
