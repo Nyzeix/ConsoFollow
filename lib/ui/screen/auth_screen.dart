@@ -87,7 +87,10 @@ class _AuthScreenState extends State<AuthScreen> {
               children: [
                 // Connexion
                 ElevatedButton(
-                  style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16), 
+                    foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                    backgroundColor: Theme.of(context).colorScheme.primary),
                   onPressed: () async {
                     final username = _usernameCtrl.text;
                     final error = await vm.login(username, _passwordCtrl.text);
