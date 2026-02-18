@@ -194,178 +194,183 @@ class _StatementScreenState extends State<StatementScreen> {
       context: context,
       builder: (context) {
         return Dialog(
-          child: SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 400),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Center(
-                      child: const Text(
-                        'Ajouter une consommation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    DropdownButtonFormField<String>(
-                      items: [
-                        MapEntry('Electricité', ConsumptionType.electricity.unit),
-                        MapEntry('Eau', ConsumptionType.water.unit),
-                        MapEntry('Gaz', ConsumptionType.gas.unit),
-                      ]
-                        .map((entry) => DropdownMenuItem(
-                          value: entry.value,
-                          child: Text(entry.key),
-                        ))
-                        .toList(),
-                      onChanged: (value) {
-                        typeController.text = value ?? '';
-                      },
-                      decoration: const InputDecoration(labelText: 'Type'),
-                    ),
-                    Row(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(
+                  child: const Text(
+                    'Ajouter une consommation',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Expanded(
-                          child: TextField(
-                            controller: amountController,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                            decoration: const InputDecoration(labelText: 'Quantité'),
-                          ),
+                        DropdownButtonFormField<String>(
+                          items: [
+                            MapEntry('Electricité', ConsumptionType.electricity.unit),
+                            MapEntry('Eau', ConsumptionType.water.unit),
+                            MapEntry('Gaz', ConsumptionType.gas.unit),
+                          ]
+                            .map((entry) => DropdownMenuItem(
+                              value: entry.value,
+                              child: Text(entry.key),
+                            ))
+                            .toList(),
+                          onChanged: (value) {
+                            typeController.text = value ?? '';
+                          },
+                          decoration: const InputDecoration(labelText: 'Type'),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: TextField(
-                            controller: typeController,
-                            readOnly: true,
-                            decoration: const InputDecoration(labelText: 'Unité'),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: amountController,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                decoration: const InputDecoration(labelText: 'Quantité'),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextField(
+                                controller: typeController,
+                                readOnly: true,
+                                decoration: const InputDecoration(labelText: 'Unité'),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: dateController,
+                          readOnly: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Date',
+                            suffixIcon: Icon(Icons.calendar_today),
                           ),
+                          onTap: () async {
+                            final now = DateTime.now();
+                            final initialDate = dateController.text.isNotEmpty
+                                ? selectedDate ?? now
+                                : now;
+                            final picked = await showDatePicker(
+                              context: context,
+                              initialDate: initialDate,
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2100),
+                            );
+                            if (picked != null) {
+                              selectedDate = picked;
+                              dateController.text =
+                                  '${picked.year.toString().padLeft(4, '0')}-'
+                                  '${picked.month.toString().padLeft(2, '0')}-'
+                                  '${picked.day.toString().padLeft(2, '0')}';
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: timeController,
+                          readOnly: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Heure',
+                            suffixIcon: Icon(Icons.schedule),
+                          ),
+                          onTap: () async {
+                            final now = TimeOfDay.fromDateTime(DateTime.now());
+                            final initialTime = selectedTime ?? now;
+                            final picked = await showTimePicker(
+                              context: context,
+                              initialTime: initialTime,
+                            );
+                            if (picked != null) {
+                              selectedTime = picked;
+                              timeController.text =
+                                  '${picked.hour.toString().padLeft(2, '0')}'
+                                  ':${picked.minute.toString().padLeft(2, '0')}';
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 12),
+
+                        DropdownButtonFormField<String>(
+                          items: [
+                            for (var home in context.watch<HomeViewModel>().homes)
+                              home.name,
+                          ]
+                            .map((homeName) => DropdownMenuItem(
+                              value: homeName,
+                              child: Text(homeName),
+                            ))
+                            .toList(),
+                          onChanged: (value) {
+                            homeController.text = value ?? '';
+                          },
+                          decoration: const InputDecoration(labelText: 'Maison'),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: dateController,
-                      readOnly: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Date',
-                        suffixIcon: Icon(Icons.calendar_today),
-                      ),
-                      onTap: () async {
-                        final now = DateTime.now();
-                        final initialDate = dateController.text.isNotEmpty
-                            ? selectedDate ?? now
-                            : now;
-                        final picked = await showDatePicker(
-                          context: context,
-                          initialDate: initialDate,
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2100),
-                        );
-                        if (picked != null) {
-                          selectedDate = picked;
-                          dateController.text =
-                              '${picked.year.toString().padLeft(4, '0')}-'
-                              '${picked.month.toString().padLeft(2, '0')}-'
-                              '${picked.day.toString().padLeft(2, '0')}';
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: timeController,
-                      readOnly: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Heure',
-                        suffixIcon: Icon(Icons.schedule),
-                      ),
-                      onTap: () async {
-                        final now = TimeOfDay.fromDateTime(DateTime.now());
-                        final initialTime = selectedTime ?? now;
-                        final picked = await showTimePicker(
-                          context: context,
-                          initialTime: initialTime,
-                        );
-                        if (picked != null) {
-                          selectedTime = picked;
-                          timeController.text =
-                              '${picked.hour.toString().padLeft(2, '0')}'
-                              ':${picked.minute.toString().padLeft(2, '0')}';
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 12),
-            
-                    DropdownButtonFormField<String>(
-                      items: [
-                        for (var home in context.watch<HomeViewModel>().homes)
-                          home.name,
-                      ]
-                        .map((homeName) => DropdownMenuItem(
-                          value: homeName,
-                          child: Text(homeName),
-                        ))
-                        .toList(),
-                      onChanged: (value) {
-                        homeController.text = value ?? '';
-                      },
-                      decoration: const InputDecoration(labelText: 'Maison'),
-                    ),
-            
-                    const SizedBox(height: 16),
-            
-                    // Ligne de boutons Ajouter / Annuler standardisé
-                    CancelAddStandardRow(
-                       onPressedAdd: () async {
-                        final validationError = context
-                            .read<StatementViewModel>()
-                            .validateConsumptionInputs(
-                              type: typeController.text,
-                              amountText: amountController.text,
-                              dateText: dateController.text,
-                              timeText: timeController.text,
-                              homeText: homeController.text,
-                            );
-                        if (validationError != null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(validationError)),
-                          );
-                          return;
-                        }
-                        final date = selectedDate;
-                        final time = selectedTime;
-                        final combinedDateTime = DateTime(
-                          date!.year,
-                          date.month,
-                          date.day,
-                          time!.hour,
-                          time.minute,
-                        );
-                        final amount = double.tryParse(amountController.text) ?? 0;
-                        final newConsumption = Consumption(
-                          consumptionType: typeController.text,
-                          amount: amount,
-                          date: combinedDateTime.toIso8601String(),
-                          homeId: context.read<HomeViewModel>().homes.firstWhere((home) => home.name == homeController.text, orElse: () => Home(id: 0, name: "Inconnu")).id ?? 0,
-                        );
-                        await context
-                            .read<StatementViewModel>()
-                            .addConsumption(newConsumption);
-                        setState(() {
-                          refreshConsumptions();
-                        });
-                        Navigator.pop(context);
-                      },
-                      onPressedCancel: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+
+                const SizedBox(height: 16),
+
+                // Ligne de boutons Ajouter / Annuler standardisé
+                CancelAddStandardRow(
+                  onPressedAdd: () async {
+                    final validationError = context
+                        .read<StatementViewModel>()
+                        .validateConsumptionInputs(
+                          type: typeController.text,
+                          amountText: amountController.text,
+                          dateText: dateController.text,
+                          timeText: timeController.text,
+                          homeText: homeController.text,
+                        );
+                    if (validationError != null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(validationError)),
+                      );
+                      return;
+                    }
+                    final date = selectedDate;
+                    final time = selectedTime;
+                    final combinedDateTime = DateTime(
+                      date!.year,
+                      date.month,
+                      date.day,
+                      time!.hour,
+                      time.minute,
+                    );
+                    final amount = double.tryParse(amountController.text) ?? 0;
+                    final newConsumption = Consumption(
+                      consumptionType: typeController.text,
+                      amount: amount,
+                      date: combinedDateTime.toIso8601String(),
+                      homeId: context.read<HomeViewModel>().homes.firstWhere((home) => home.name == homeController.text, orElse: () => Home(id: 0, name: "Inconnu")).id ?? 0,
+                    );
+                    await context
+                        .read<StatementViewModel>()
+                        .addConsumption(newConsumption);
+                    setState(() {
+                      refreshConsumptions();
+                    });
+                    Navigator.pop(context);
+                  },
+                  onPressedCancel: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
             ),
           ),
         );
@@ -397,220 +402,222 @@ class _StatementScreenState extends State<StatementScreen> {
       context: context,
       builder: (context) {
         return Dialog(
-          child: SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 400),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Center(
-                      child: const Text(
-                        'Editer une consommation',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    DropdownButtonFormField<String>(
-                      // Valeur initiale
-                      initialValue: consumption.consumptionType,
-                      items: [
-                        MapEntry('Electricité', ConsumptionType.electricity.unit),
-                        MapEntry('Eau', ConsumptionType.water.unit),
-                        MapEntry('Gaz', ConsumptionType.gas.unit),
-                      ]
-                        .map((entry) => DropdownMenuItem(
-                          value: entry.value,
-                          child: Text(entry.key),
-                        ))
-                        .toList(),
-                      onChanged: (value) {
-                        typeController.text = value ?? '';
-                      },
-                      decoration: const InputDecoration(labelText: 'Type'),
-                    ),
-                    Row(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(
+                  child: const Text(
+                    'Editer une consommation',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Expanded(
-                          child: TextField(
-                            controller: amountController,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                            decoration: const InputDecoration(labelText: 'Quantité'),
-                          ),
+                        DropdownButtonFormField<String>(
+                          // Valeur initiale
+                          initialValue: consumption.consumptionType,
+                          items: [
+                            MapEntry('Electricité', ConsumptionType.electricity.unit),
+                            MapEntry('Eau', ConsumptionType.water.unit),
+                            MapEntry('Gaz', ConsumptionType.gas.unit),
+                          ]
+                            .map((entry) => DropdownMenuItem(
+                              value: entry.value,
+                              child: Text(entry.key),
+                            ))
+                            .toList(),
+                          onChanged: (value) {
+                            typeController.text = value ?? '';
+                          },
+                          decoration: const InputDecoration(labelText: 'Type'),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: TextField(
-                            controller: typeController,
-                            readOnly: true,
-                            decoration: const InputDecoration(labelText: 'Unité'),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: amountController,
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                                decoration: const InputDecoration(labelText: 'Quantité'),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextField(
+                                controller: typeController,
+                                readOnly: true,
+                                decoration: const InputDecoration(labelText: 'Unité'),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: dateController,
+                          readOnly: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Date',
+                            suffixIcon: Icon(Icons.calendar_today),
                           ),
+                          onTap: () async {
+                            final now = DateTime.now();
+                            final initialDate = dateController.text.isNotEmpty
+                                ? selectedDate ?? now
+                                : now;
+                            final picked = await showDatePicker(
+                              context: context,
+                              initialDate: initialDate,
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2100),
+                            );
+                            if (picked != null) {
+                              selectedDate = picked;
+                              dateController.text =
+                                  '${picked.year.toString().padLeft(4, '0')}-'
+                                  '${picked.month.toString().padLeft(2, '0')}-'
+                                  '${picked.day.toString().padLeft(2, '0')}';
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: timeController,
+                          readOnly: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Heure',
+                            suffixIcon: Icon(Icons.schedule),
+                          ),
+                          onTap: () async {
+                            final now = TimeOfDay.fromDateTime(DateTime.now());
+                            final initialTime = selectedTime ?? now;
+                            final picked = await showTimePicker(
+                              context: context,
+                              initialTime: initialTime,
+                            );
+                            if (picked != null) {
+                              selectedTime = picked;
+                              timeController.text =
+                                  '${picked.hour.toString().padLeft(2, '0')}'
+                                  ':${picked.minute.toString().padLeft(2, '0')}';
+                            }
+                          },
+                        ),
+                        const SizedBox(height: 12),
+
+                        DropdownButtonFormField<String>(
+                          // Valeur initiale
+                          initialValue: context.read<HomeViewModel>().homes.firstWhere((home) => home.id == consumption.homeId, orElse: () => Home(id: 0, name: "Inconnu")).name,
+                          items: [
+                            for (var home in context.watch<HomeViewModel>().homes)
+                              home.name,
+                          ]
+                            .map((homeName) => DropdownMenuItem(
+                              value: homeName,
+                              child: Text(homeName),
+                            ))
+                            .toList(),
+                          onChanged: (value) {
+                            homeController.text = value ?? '';
+                          },
+                          decoration: const InputDecoration(labelText: 'Maison'),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: dateController,
-                      readOnly: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Date',
-                        suffixIcon: Icon(Icons.calendar_today),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Ligne de boutons Editer / Supprimer / Annuler standardisé
+                Row(
+                  // Suppression
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.error,
+                        foregroundColor: Theme.of(context).colorScheme.onError,
                       ),
-                      onTap: () async {
-                        final now = DateTime.now();
-                        final initialDate = dateController.text.isNotEmpty
-                            ? selectedDate ?? now
-                            : now;
-                        final picked = await showDatePicker(
-                          context: context,
-                          initialDate: initialDate,
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2100),
-                        );
-                        if (picked != null) {
-                          selectedDate = picked;
-                          dateController.text =
-                              '${picked.year.toString().padLeft(4, '0')}-'
-                              '${picked.month.toString().padLeft(2, '0')}-'
-                              '${picked.day.toString().padLeft(2, '0')}';
-                        }
-                      },
+                      onPressed: () async {
+                        await context.read<StatementViewModel>()
+                          .deleteConsumption(consumption.id!);
+                        setState(() {
+                          refreshConsumptions();
+                        });
+                        Navigator.pop(context);
+                      }, 
+                      icon: Icon(Icons.delete_outline)),
+
+                    const SizedBox(width: 10),
+
+                    // Annuler
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Annuler'),
                     ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: timeController,
-                      readOnly: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Heure',
-                        suffixIcon: Icon(Icons.schedule),
+
+                    const SizedBox(width: 10),
+
+                    // Editer
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                        foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
                       ),
-                      onTap: () async {
-                        final now = TimeOfDay.fromDateTime(DateTime.now());
-                        final initialTime = selectedTime ?? now;
-                        final picked = await showTimePicker(
-                          context: context,
-                          initialTime: initialTime,
-                        );
-                        if (picked != null) {
-                          selectedTime = picked;
-                          timeController.text =
-                              '${picked.hour.toString().padLeft(2, '0')}'
-                              ':${picked.minute.toString().padLeft(2, '0')}';
+                      onPressed: () async {
+                        final validationError = context
+                            .read<StatementViewModel>()
+                            .validateConsumptionInputs(
+                              type: typeController.text,
+                              amountText: amountController.text,
+                              dateText: dateController.text,
+                              timeText: timeController.text,
+                              homeText: homeController.text,
+                            );
+                        if (validationError != null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(validationError)),
+                          );
+                          return;
                         }
+                        final date = selectedDate;
+                        final time = selectedTime;
+                        final combinedDateTime = DateTime(
+                          date!.year,
+                          date.month,
+                          date.day,
+                          time!.hour,
+                          time.minute,
+                        );
+                        final amount = double.tryParse(amountController.text) ?? 0;
+                        final newConsumption = Consumption(
+                          id: consumption.id, // Important pour la mise à jour
+                          consumptionType: typeController.text,
+                          amount: amount,
+                          date: combinedDateTime.toIso8601String(),
+                          homeId: context.read<HomeViewModel>().homes.firstWhere((home) => home.name == homeController.text, orElse: () => Home(id: 0, name: "Inconnu")).id ?? 0,
+                        );
+                        await context
+                            .read<StatementViewModel>()
+                            .updateConsumption(newConsumption);
+                        setState(() {
+                          refreshConsumptions();
+                        });
+                        Navigator.pop(context);
                       },
-                    ),
-                    const SizedBox(height: 12),
-            
-                    DropdownButtonFormField<String>(
-                      // Valeur initiale
-                      initialValue: context.read<HomeViewModel>().homes.firstWhere((home) => home.id == consumption.homeId, orElse: () => Home(id: 0, name: "Inconnu")).name,
-                      items: [
-                        for (var home in context.watch<HomeViewModel>().homes)
-                          home.name,
-                      ]
-                        .map((homeName) => DropdownMenuItem(
-                          value: homeName,
-                          child: Text(homeName),
-                        ))
-                        .toList(),
-                      onChanged: (value) {
-                        homeController.text = value ?? '';
-                      },
-                      decoration: const InputDecoration(labelText: 'Maison'),
-                    ),
-            
-                    const SizedBox(height: 16),
-            
-                    // Ligne de boutons Editer / Supprimer / Anuller standardisé
-                     Row(
-                      // Suppression
-                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                       children: [
-                         TextButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).colorScheme.error,
-                            foregroundColor: Theme.of(context).colorScheme.onError,
-                          ),
-                          onPressed: () async {
-                            await context.read<StatementViewModel>()
-                              .deleteConsumption(consumption.id!);
-                            setState(() {
-                              refreshConsumptions();
-                            });
-                            Navigator.pop(context);
-                          },
-                          icon: const Icon(Icons.delete_outline),
-                          label: const Text("Supprimer"),
-
-                        ),
-
-                        const SizedBox(width: 10),
-
-                        // Annuler 
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('Annuler'),
-                        ),
-
-                        const SizedBox(width: 10),
-
-                        // Editer
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                            foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-                          ),
-                          onPressed: () async {
-                            final validationError = context
-                                .read<StatementViewModel>()
-                                .validateConsumptionInputs(
-                                  type: typeController.text,
-                                  amountText: amountController.text,
-                                  dateText: dateController.text,
-                                  timeText: timeController.text,
-                                  homeText: homeController.text,
-                                );
-                            if (validationError != null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(validationError)),
-                              );
-                              return;
-                            }
-                            final date = selectedDate;
-                            final time = selectedTime;
-                            final combinedDateTime = DateTime(
-                              date!.year,
-                              date.month,
-                              date.day,
-                              time!.hour,
-                              time.minute,
-                            );
-                            final amount = double.tryParse(amountController.text) ?? 0;
-                            final newConsumption = Consumption(
-                              id: consumption.id, // Important pour la mise à jour
-                              consumptionType: typeController.text,
-                              amount: amount,
-                              date: combinedDateTime.toIso8601String(),
-                              homeId: context.read<HomeViewModel>().homes.firstWhere((home) => home.name == homeController.text, orElse: () => Home(id: 0, name: "Inconnu")).id ?? 0,
-                            );
-                            await context
-                                .read<StatementViewModel>()
-                                .updateConsumption(newConsumption);
-                            setState(() {
-                              refreshConsumptions();
-                            });
-                            Navigator.pop(context);
-                          },
-                          child: const Text("Editer"),
-                        ),
-                      ]
+                      child: const Text("Editer"),
                     ),
                   ],
                 ),
-              ),
+              ],
             ),
           ),
         );

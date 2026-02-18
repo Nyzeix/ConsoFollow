@@ -31,12 +31,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
         },
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Dashboard(),
+              SizedBox(height: 80), // Triche pour éviter que le FloatingActionButton ne cache du contenu
             ],
           ),
         ),

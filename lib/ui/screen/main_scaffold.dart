@@ -93,11 +93,11 @@ class _MainScaffoldState extends State<MainScaffold> {
   PreferredSizeWidget _appBar() {
     return AppBar(
       backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-      title: Text("ConsoFollow - $selectedPageLabel"),
+      title: Text("ConsoFollow"),
       centerTitle: true,
       actions: [
         Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: IconButton(
             icon: const Icon(Icons.replay_outlined),
             tooltip: "Actualiser",
