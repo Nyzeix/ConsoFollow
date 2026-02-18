@@ -3,14 +3,14 @@ class Consumption {
   final String consumptionType;
   final double amount;
   final String date;
-  final String homeName;
+  final int homeId;
 
   Consumption({
     this.id,
     required this.consumptionType,
     required this.amount,
     required this.date,
-    required this.homeName,
+    required this.homeId,
   });
 
   Map<String, dynamic> toMap() {
@@ -18,7 +18,7 @@ class Consumption {
       'consumption_type': consumptionType,
       'amount': amount,
       'date': date,
-      'home_name': homeName,
+      'home_id': homeId,
     };
     if (id != null) {
       map['id'] = id;
@@ -32,7 +32,7 @@ class Consumption {
       consumptionType: map['consumption_type'],
       amount: map['amount'],
       date: map['date'],
-      homeName: map['home_name'],
+      homeId: map['home_id'],
     );
   }
 

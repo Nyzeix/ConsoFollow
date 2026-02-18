@@ -1,4 +1,5 @@
 import 'package:conso_follow/models/consumption.dart';
+import 'package:conso_follow/models/home.dart';
 import 'package:conso_follow/ui/widgets/cancel_add_standard_row.dart';
 import 'package:conso_follow/ui/widgets/data_card.dart';
 import 'package:conso_follow/ui/widgets/statement_header.dart';
@@ -30,6 +31,7 @@ class _StatementScreenState extends State<StatementScreen> {
     refreshConsumptions();
   }
 
+
   void refreshConsumptions() {
     setState(() {
       _consumptionsFuture = context.read<StatementViewModel>().fetchConsumptionsGroupedByType();
@@ -38,8 +40,7 @@ class _StatementScreenState extends State<StatementScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<StatementViewModel>();
-
+    final statementViewModel = context.watch<StatementViewModel>();
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         tooltip: "Ajouter",
@@ -56,8 +57,8 @@ class _StatementScreenState extends State<StatementScreen> {
             return const Center(child: CircularProgressIndicator());
           } 
           
-          if (snapshot.hasError || vm.errorMessage != null) {
-            final errorMsg = vm.errorMessage ?? snapshot.error.toString();
+          if (snapshot.hasError || statementViewModel.errorMessage != null) {
+            final errorMsg = statementViewModel.errorMessage ?? snapshot.error.toString();
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -348,7 +349,7 @@ class _StatementScreenState extends State<StatementScreen> {
                           consumptionType: typeController.text,
                           amount: amount,
                           date: combinedDateTime.toIso8601String(),
-                          homeName: homeController.text,
+                          homeId: context.read<HomeViewModel>().homes.firstWhere((home) => home.name == homeController.text, orElse: () => Home(id: 0, name: "Inconnu")).id ?? 0,
                         );
                         await context
                             .read<StatementViewModel>()
@@ -387,7 +388,8 @@ class _StatementScreenState extends State<StatementScreen> {
     amountController.text = consumption.amount.toString();
     dateController.text = consumption.date.substring(0, 10); // "YYYY-MM-DD"
     timeController.text = consumption.date.substring(11, 16); // "HH:MM"
-    homeController.text = consumption.homeName;
+    // Récupère la première maison avec l'ID correspondant, si rien n'est trouvé (Ne devrait pas arriver), on affiche "Inconnu"
+    homeController.text = context.read<HomeViewModel>().homes.firstWhere((home) => home.id == consumption.homeId, orElse: () => Home(id: 0, name: "Inconnu")).name;
     selectedDate = DateTime.parse(consumption.date);
     selectedTime = TimeOfDay.fromDateTime(selectedDate);
 
@@ -504,7 +506,7 @@ class _StatementScreenState extends State<StatementScreen> {
             
                     DropdownButtonFormField<String>(
                       // Valeur initiale
-                      initialValue: consumption.homeName,
+                      initialValue: context.read<HomeViewModel>().homes.firstWhere((home) => home.id == consumption.homeId, orElse: () => Home(id: 0, name: "Inconnu")).name,
                       items: [
                         for (var home in context.watch<HomeViewModel>().homes)
                           home.name,
@@ -592,7 +594,7 @@ class _StatementScreenState extends State<StatementScreen> {
                               consumptionType: typeController.text,
                               amount: amount,
                               date: combinedDateTime.toIso8601String(),
-                              homeName: homeController.text,
+                              homeId: context.read<HomeViewModel>().homes.firstWhere((home) => home.name == homeController.text, orElse: () => Home(id: 0, name: "Inconnu")).id ?? 0,
                             );
                             await context
                                 .read<StatementViewModel>()

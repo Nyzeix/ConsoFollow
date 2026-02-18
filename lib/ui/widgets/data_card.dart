@@ -1,5 +1,8 @@
 import 'package:conso_follow/models/consumption.dart';
+import 'package:conso_follow/models/home.dart';
+import 'package:conso_follow/viewModels/home_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DataCard extends StatefulWidget {
   final Consumption consumption;
@@ -57,7 +60,7 @@ class _DataCardState extends State<DataCard> {
         
               // Maison associée
               Text(
-                widget.consumption.homeName,
+                context.watch<HomeViewModel>().homes.firstWhere((home) => home.id == widget.consumption.homeId, orElse: () => Home(id: 0, name: "Inconnu")).name,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
             ],

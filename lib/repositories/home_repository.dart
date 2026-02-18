@@ -8,6 +8,7 @@ abstract class IHomeRepository {
   Future<List<Home>> getHomes(User user);
   Future<void> insertHome(Home home, User user);
   Future<void> deleteHome(int id);
+  Future<Home?> getHomeById(int id);
 }
 
 // L'implémentation
@@ -64,5 +65,15 @@ class HomeRepository implements IHomeRepository {
       where: 'home_id = ?',
       whereArgs: [id],
     );
+  }
+
+  @override
+  Future<Home?> getHomeById(int id) async {
+    final db = await _dbHelper.database;
+    final List<Map<String, dynamic>> maps = await db.query('home', where: 'id = ?', whereArgs: [id]);
+    if (maps.isNotEmpty) {
+      return Home.fromMap(maps.first);
+    }
+    return null;
   }
 }

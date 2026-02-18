@@ -43,7 +43,7 @@ class ConsumptionRepository implements IConsumptionRepository {
     final List<Map<String, dynamic>> maps = await db.rawQuery(
       '''
       SELECT c.* FROM consumption c
-      INNER JOIN home h ON c.home_name = h.name
+      INNER JOIN home h ON c.home_id = h.id
       INNER JOIN usertohome uth ON h.id = uth.home_id
       WHERE uth.user_id = ?
       ''',
@@ -66,7 +66,7 @@ class ConsumptionRepository implements IConsumptionRepository {
     final List<Map<String, dynamic>> maps = await db.rawQuery(
       '''
       SELECT c.* FROM consumption c
-      INNER JOIN home h ON c.home_name = h.name
+      INNER JOIN home h ON c.home_id = h.id
       INNER JOIN usertohome uth ON h.id = uth.home_id
       WHERE uth.user_id = ? AND c.consumption_type = ?
       ''',

@@ -96,4 +96,13 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
+  Future<Home?> getHomeById(int id) async {
+    try {
+      return await _homeRepository.getHomeById(id);
+    } catch (e) {
+      _errorMessage = e.toString();
+      notifyListeners();
+      return null;
+    }
+  }
 }

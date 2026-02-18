@@ -26,7 +26,14 @@ class DatabaseHelper {
     // Je n'ai pas essayé de l'implémenter, car je ne sais pas encore bien le faire. 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
+      onUpgrade: (db, oldVersion, newVersion) {
+        // Migration de la version 1 à 2
+        if (oldVersion == 1 && newVersion == 2) {
+          db.execute('ALTER TABLE consumption ADD COLUMN home_id INTEGER');
+          db.execute('ALTER TABLE consumption ADD FOREIGN KEY(home_id) REFERENCES home(id)');
+        }
+      },
       onCreate: (db, version) async {
         await db.execute(
           'CREATE TABLE user(id INTEGER PRIMARY KEY, name TEXT, password TEXT, salt TEXT)',
@@ -38,7 +45,7 @@ class DatabaseHelper {
           'CREATE TABLE usertohome(id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER, home_id INTEGER, FOREIGN KEY(user_id) REFERENCES user(id), FOREIGN KEY(home_id) REFERENCES home(id))',
         );
         await db.execute(
-          'CREATE TABLE consumption(id INTEGER PRIMARY KEY AUTOINCREMENT, amount REAL, consumption_type TEXT, date TEXT, home_name TEXT, FOREIGN KEY(home_name) REFERENCES home(name))',
+          'CREATE TABLE consumption(id INTEGER PRIMARY KEY AUTOINCREMENT, amount REAL, consumption_type TEXT, date TEXT, home_id INTEGER, FOREIGN KEY(home_id) REFERENCES home(id))',
         );
       },
     );

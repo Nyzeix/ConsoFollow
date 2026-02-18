@@ -89,16 +89,16 @@ class _DashboardState extends State<Dashboard> {
                   return const Text('Aucune maison enregistrée.');
                 }
 
-                final allowedHomeNames = homes.map((home) => home.name).toSet();
+                final allowedHomeIds = homes.map((home) => home.id).toSet();
                 final userConsumptions = statementViewModel.consumptions
-                    .where((consumption) => allowedHomeNames.contains(consumption.homeName))
+                    .where((consumption) => allowedHomeIds.contains(consumption.homeId))
                     .toList();
 
                 return Column(
                   children: homes.map((home) {
                     final homeConsumptions = vm.filterBySelectedDays(
                       userConsumptions
-                          .where((consumption) => consumption.homeName == home.name)
+                          .where((consumption) => consumption.homeId == home.id)
                           .toList(),
                       _selectedDays,
                     );
