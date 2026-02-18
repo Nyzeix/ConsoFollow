@@ -1,6 +1,8 @@
 import 'package:conso_follow/models/consumption.dart';
+import 'package:conso_follow/models/dashboard_chart_data.dart';
 import 'package:conso_follow/models/user.dart';
 import 'package:conso_follow/repositories/consumption_repository.dart';
+import 'package:conso_follow/resources/theme.dart';
 import 'package:conso_follow/utils/consumption_type_enum.dart';
 import 'package:flutter/material.dart';
 
@@ -151,4 +153,31 @@ class StatementViewModel extends ChangeNotifier {
     return consumptions.where((consumption) => consumption.consumptionType == type.unit).toList();
   }
   
+  DashboardChartData buildDashboardChartData({
+    required List<Consumption> homeConsumptions,
+    required bool isElecEnabled,
+    required bool isWaterEnabled,
+    required bool isGasEnabled,
+  }) {
+    final series = <List<Consumption>>[];
+    final colors = <Color>[];
+    final labels = <String>[];
+
+    if (isElecEnabled) {
+      series.add(filterByType(homeConsumptions, ConsumptionType.electricity));
+      colors.add(MaterialTheme.electricity.value);
+      labels.add('Electricité');
+    }
+    if (isWaterEnabled) {
+      series.add(filterByType(homeConsumptions, ConsumptionType.water));
+      colors.add(MaterialTheme.water.value);
+      labels.add('Eau');
+    }
+    if (isGasEnabled) {
+      series.add(filterByType(homeConsumptions, ConsumptionType.gas));
+      colors.add(MaterialTheme.gas.value);
+      labels.add('Gaz');
+    }
+    return DashboardChartData(series: series, lineColors: colors, lineLabels: labels);
+  }
 }

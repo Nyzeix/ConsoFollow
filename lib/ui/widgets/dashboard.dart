@@ -1,9 +1,7 @@
 import 'package:conso_follow/ui/widgets/setting_area.dart';
 import 'package:conso_follow/ui/widgets/setting_row.dart';
 import 'package:conso_follow/viewModels/home_view_model.dart';
-import 'package:conso_follow/resources/theme.dart';
 import 'package:conso_follow/ui/widgets/multilines_chart.dart';
-import 'package:conso_follow/utils/consumption_type_enum.dart';
 import 'package:conso_follow/viewModels/statement_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -105,20 +103,6 @@ class _DashboardState extends State<Dashboard> {
                       _selectedDays,
                     );
 
-                    // On prépare la série de données à afficher.
-                    final series = [
-                      if (isElecEnabled) ...[vm.filterByType(homeConsumptions, ConsumptionType.electricity)],
-                      if (isWaterEnabled) ...[vm.filterByType(homeConsumptions, ConsumptionType.water)],
-                      if (isGasEnabled) ...[vm.filterByType(homeConsumptions, ConsumptionType.gas)],
-                    ];
-
-                    // On adapte la liste de couleurs en conséquence
-                    final lineColors = [
-                      if (isElecEnabled) MaterialTheme.electricity.value,
-                      if (isWaterEnabled) MaterialTheme.water.value,
-                      if (isGasEnabled) MaterialTheme.gas.value,
-                    ];
-
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -132,8 +116,7 @@ class _DashboardState extends State<Dashboard> {
                           children: [
                             ConsumptionMultiLineChart(
                               backgroundColor: Theme.of(context).colorScheme.surface,
-                              series: series,
-                              lineColors: lineColors,
+                              chartData: vm.buildDashboardChartData(homeConsumptions: homeConsumptions, isElecEnabled: isElecEnabled, isWaterEnabled: isWaterEnabled, isGasEnabled: isGasEnabled),
                             ),
                             const SizedBox(height: 16),
                           ],
