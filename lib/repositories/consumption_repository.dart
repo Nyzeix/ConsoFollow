@@ -12,6 +12,7 @@ abstract class IConsumptionRepository {
   );
   Future<void> insertConsumption(Consumption consumption);
   Future<void> deleteConsumption(int id);
+  Future<void> updateConsumption(Consumption consumption);
 }
 
 // L'implémentation
@@ -86,6 +87,18 @@ class ConsumptionRepository implements IConsumptionRepository {
       'consumption',
       where: 'id = ?', // Clause WHERE sécurisée contre les injections SQL
       whereArgs: [id],
+    );
+  }
+
+  /// Mise à jour d'une consommation.
+  @override
+  Future<void> updateConsumption(Consumption consumption) async {
+    final db = await _dbHelper.database;
+    await db.update(
+      'consumption',
+      consumption.toMap(),
+      where: 'id = ?',
+      whereArgs: [consumption.id],
     );
   }
 }

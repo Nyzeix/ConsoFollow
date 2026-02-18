@@ -91,6 +91,13 @@ class StatementViewModel extends ChangeNotifier {
     await loadConsumptions();
   } 
 
+
+  Future<void> updateConsumption(Consumption consumption) async {
+    await _consumptionRepository.updateConsumption(consumption);
+    await loadConsumptions();
+  }
+
+
   /// Récupère la liste des consommations de l'utilisateur courant.
   Future<List<Consumption>> fetchConsumptions() async {
     if (_currentUser == null) {
@@ -106,6 +113,7 @@ class StatementViewModel extends ChangeNotifier {
       return [];
     }
   }
+
 
   /// Récupère les consommations de l'utilisateur courant filtrées par type.
   Future<List<Consumption>> fetchConsumptionsByType(ConsumptionType type) async {
@@ -126,6 +134,7 @@ class StatementViewModel extends ChangeNotifier {
     }
   }
 
+
   /// Récupère les consommations de l'utilisateur courant et les regroupe par type.
   Future<Map<ConsumptionType, List<Consumption>>> fetchConsumptionsGroupedByType() async {
     final results = await Future.wait([
@@ -141,6 +150,7 @@ class StatementViewModel extends ChangeNotifier {
     };
   }
 
+
     /// Filtre les consommations pour n'afficher que celles des derniers jours sélectionnés.
   List<Consumption> filterBySelectedDays(List<Consumption> consumptions, int selectedDays) {
     final now = DateTime.now();
@@ -148,11 +158,14 @@ class StatementViewModel extends ChangeNotifier {
     return consumptions.where((consumption) => consumption.time.isAfter(startDate)).toList();
   }
 
+
   /// Filtre les consommations selon un type.
   List<Consumption> filterByType(List<Consumption> consumptions, ConsumptionType type) {
     return consumptions.where((consumption) => consumption.consumptionType == type.unit).toList();
   }
   
+
+  /// Données du dashboard
   DashboardChartData buildDashboardChartData({
     required List<Consumption> homeConsumptions,
     required bool isElecEnabled,
