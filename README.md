@@ -13,6 +13,7 @@ Application de gestion de sa consommation énergétique. Réalisé en 3J pour le
 * **lib/utils/** contient des fichiers, fonctions, Enumerations qui peuvent s'avérer utile à travers le projet.
 * **lib/viewModels/** contient les différents viewModels de l'application (Fait la liaison entre Front-End (UI) et Back-End (Database))
 
+## Notes
 Tous les textes sont codés en dur dans l'application en français.
 
 En Flutter, il n'y a pas d'indication de "niveau de protection" d'une variable (private, protected, public).  
@@ -28,3 +29,13 @@ Dans chaque objet de classe dans **lib/models/**, il y a des fonctions:
 factory Consumption.fromMap(Map<String dynamic> map) {...}
 ```
 Ces fonctions permettent la conversion entre l'objet lui-même et sa copie nécessaire pour le mettre en base de données.  
+
+
+## Installation de l'application
+Dans la section Release, vous trouverez, dans la dernière release, un fichier Zip contenant le fichier de l'application installable et exécutable pour Android (.apk) et macOS (.dmg).  
+
+## Récupération du dépot
+Cloner le dépot sur votre ordinateur.  
+[Installer VSCode](https://code.visualstudio.com/).
+[Installer les extensions Flutter dans VSCode](https://docs.flutter.dev/install/with-vs-code).
+Optionel: Installer les outils de simulation pour votre plateforme favorite.
