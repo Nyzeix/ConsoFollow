@@ -7,17 +7,35 @@ import 'dart:math' as math;
 // Assisté par IA pour la création du LineChart, car je ne connaissais pas la librairie.
 
 class ConsumptionMultiLineChart extends StatelessWidget {
-  final DashboardChartData? chartData;
+  final DashboardChartData chartData;
   final Color? backgroundColor;
 
   const ConsumptionMultiLineChart({
     super.key,
-    this.chartData,
+    required this.chartData,
     this.backgroundColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Vérifie si les données sont vides
+    if (chartData.series.isEmpty || chartData.series.every((list) => list.isEmpty)) {
+      return Card(
+        elevation: 10,
+        color: backgroundColor ?? Theme.of(context).colorScheme.primaryContainer,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(
+            child: Text(
+              'Aucune donnée de consommation disponible',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+        ),
+      );
+    }
+
+    // Affiche le graphique
     return Card(
       elevation: 10,
       color: backgroundColor ?? Theme.of(context).colorScheme.primaryContainer,
@@ -90,12 +108,12 @@ class ConsumptionMultiLineChart extends StatelessWidget {
             spacing: 12,
             runSpacing: 8,
             alignment: WrapAlignment.center,
-            children: List.generate(chartData?.series.length ?? 0, (index) {
-              final color = (chartData?.lineColors != null && index < chartData!.lineColors.length)
-                  ? chartData!.lineColors[index]
+            children: List.generate(chartData.series.length, (index) {
+              final color = (index < chartData.lineColors.length)
+                  ? chartData.lineColors[index]
                   : Colors.blue;
-              final label = (chartData?.lineLabels != null && index < chartData!.lineLabels.length)
-                  ? chartData!.lineLabels[index]
+              final label = (index < chartData.lineLabels.length)
+                  ? chartData.lineLabels[index]
                   : '';
               return Row(
                 mainAxisSize: MainAxisSize.min,
@@ -113,13 +131,13 @@ class ConsumptionMultiLineChart extends StatelessWidget {
   }
 
   List<LineChartBarData> _buildLineBarsData() {
-    return List.generate(chartData?.series.length ?? 0, (index) {
-      final color = (chartData?.lineColors != null && index < chartData!.lineColors.length)
-          ? chartData!.lineColors[index]
+    return List.generate(chartData.series.length, (index) {
+      final color = (index < chartData.lineColors.length)
+          ? chartData.lineColors[index]
           : Colors.blue;
 
       return LineChartBarData(
-        spots: _generateSpots(chartData!.series[index]),
+        spots: _generateSpots(chartData.series[index]),
         isCurved: true,
         color: color,
         barWidth: 3,
